@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Qml.Net" Version="0.11.0" />
-    <PackageReference Include="Steamworks.NET.Standard.Windows.x64" Version="15.0.1.4" />
+    <PackageReference Include="InputSimulatorCore" Version="1.0.5" />
+    <!-- <PackageReference Include="Qml.Net" Version="0.11.0" /> -->
+    <!-- <PackageReference Include="Steamworks.NET.Standard.Windows.x64" Version="15.0.1.4" /> -->
   </ItemGroup>
 
 </Project>

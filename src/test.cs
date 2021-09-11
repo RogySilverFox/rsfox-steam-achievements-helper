@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Diagnostics;
 
@@ -16,11 +17,41 @@ class Test
         _gameFilesExe = _GetGameFilesExe(gameDirPath);
     }
 
-    public void CompleteTasks()
+    public void CompleteTasks(string steamExePath, uint repeatCount)
     {
-        string steamExePath = @"C:\Program Files (x86)\steam.exe";
-        _StartGame(_steamAppID, steamExePath);
-        // _CloseGame(_gameFilesExe);
+        Console.WriteLine("-- Start getting achievement --");
+        for (uint i = 0; i < repeatCount; i++)
+        {
+            Console.WriteLine($"Iteration number = {i}");
+            _CompleteBeforeTasks();
+            _StartGame(_steamAppID, steamExePath);
+            _CompleteCurrentTasks();
+            _CloseGame(_gameFilesExe);
+            _CompleteAfterTasks();
+
+            // TODO Повтор для тупой логики игры гребанный хардкод
+            _StartGame(_steamAppID, steamExePath);
+            _CompleteCurrentTasks();
+            _CloseGame(_gameFilesExe);
+        }
+        Console.WriteLine("-- End getting achievement --");
+    }
+
+    void _CompleteBeforeTasks()
+    {
+        Tasks.ChangeSystemTime(7);
+    }
+
+    void _CompleteCurrentTasks()
+    {
+        Tasks.DelayTime(5000);
+        Tasks.PushButton();
+        Tasks.DelayTime(30000);
+    }
+
+    void _CompleteAfterTasks()
+    {
+        Tasks.ChangeSystemTime(-7);
     }
 
     string[] _GetGameFilesExe(string gameDirPath)
@@ -32,9 +63,16 @@ class Test
 
     void _StartGame(int steamAppID, string steamExePath)
     {
-        // Process.Start($"steam://rungameid/{steamAppID}");
-        System.Diagnostics.Process.Start(
-            new ProcessStartInfo("cmd", $"start \"{steamExePath}\" steam://rungameid/{steamAppID}")
-        );
+        Process processGame = new Process();
+        processGame.StartInfo.FileName = "cmd.exe";
+        processGame.StartInfo.Arguments = $"/c START \"{steamExePath}\" steam://rungameid/{steamAppID}";
+        processGame.Start();
+    }
+
+    void _CloseGame(string[] gameFilesExe)
+    {
+        foreach (string gameExe in gameFilesExe)
+            foreach (var gameProcess in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(gameExe)))
+                gameProcess.Kill();
     }
 }
